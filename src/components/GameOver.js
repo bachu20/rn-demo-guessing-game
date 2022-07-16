@@ -1,11 +1,10 @@
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Image, Text, Button } from "@rneui/themed";
-import { useTheme } from "@react-navigation/native";
+import GameOverImage from "../../assets/game-over.jpg";
 
-const GameOver = ({ navigation, route }) => {
-  const { target, rounds } = route.params ?? {};
+const GameOver = ({ state, theme, startOver }) => {
+  const { target, roundsNeeded } = state;
 
-  const theme = useTheme();
   const styles = getStyles(theme.colors);
 
   return (
@@ -19,13 +18,13 @@ const GameOver = ({ navigation, route }) => {
       <Image
         style={styles.image}
         containerStyle={styles.imageContainer}
-        source={require("../../assets/game-over.jpg")}
+        source={GameOverImage}
       />
 
       <View style={styles.results}>
         <Text h4 h4Style={styles.resultsText}>
-          Your phone needed <Text style={styles.bold}>{rounds}</Text> rounds to
-          guess the number <Text style={styles.bold}>{target}</Text>.
+          Your phone needed <Text style={styles.bold}>{roundsNeeded}</Text>{" "}
+          rounds to guess the number <Text style={styles.bold}>{target}</Text>.
         </Text>
       </View>
 
@@ -33,7 +32,7 @@ const GameOver = ({ navigation, route }) => {
         buttonStyle={styles.newGameBtn}
         title="Start New Game"
         size="md"
-        onPress={() => navigation.navigate("Home")}
+        onPress={() => startOver()}
       />
     </View>
   );
@@ -53,7 +52,6 @@ const getStyles = (theme) => {
       justifyContent: "flex-start",
       paddingTop: 50,
       paddingHorizontal: 25,
-      backgroundColor: theme.primary,
     },
 
     header: {
@@ -71,14 +69,17 @@ const getStyles = (theme) => {
 
     imageContainer: {
       alignSelf: "center",
+      width: 300,
+      height: 300,
+      borderRadius: 150,
+      overflow: "hidden",
+      borderWidth: 2,
+      borderColor: theme.card,
       ...dropShadow,
     },
     image: {
-      width: 300,
-      height: 300,
-      borderRadius: 300 / 2,
-      borderWidth: 2,
-      borderColor: theme.card,
+      width: "100%",
+      height: "100%",
     },
 
     results: {

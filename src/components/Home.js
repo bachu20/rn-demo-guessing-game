@@ -1,22 +1,37 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { Text, Input, Button } from "@rneui/themed";
-import { useTheme } from "@react-navigation/native";
 
-const Home = ({ navigation }) => {
+const Home = ({ state, theme, setTarget }) => {
   const [value, setValue] = useState("");
 
-  const theme = useTheme();
   const styles = getStyles(theme.colors);
-
-  const handleConfirm = () => {
-    if (!value) return;
-    navigation.navigate("Game", { target: value });
-  };
 
   useEffect(() => {
     setValue("");
   }, []);
+
+  const handleConfirm = () => {
+    const target = value !== "" && +value;
+
+    if (!Number.isInteger(target) || target < 0) {
+      Alert.alert(
+        "Invalid input!",
+        "Number must be a positive integer between 0 and 99",
+        [
+          {
+            text: "Confirm",
+            style: "destructive",
+            onPress: () => setValue(""),
+          },
+        ]
+      );
+
+      return;
+    }
+
+    return setTarget(target);
+  };
 
   return (
     <View style={styles.container}>
@@ -37,9 +52,7 @@ const Home = ({ navigation }) => {
           keyboardType="numeric"
           maxLength={2}
           value={value}
-          onChangeText={(value) => {
-            setValue(value.toString().replace(".", ""));
-          }}
+          onChangeText={(value) => setValue(value)}
         />
 
         <View style={styles.numBtns}>
@@ -75,7 +88,6 @@ const getStyles = (theme) => {
       justifyContent: "flex-start",
       paddingTop: 100,
       paddingHorizontal: 25,
-      backgroundColor: theme.primary,
     },
 
     header: {

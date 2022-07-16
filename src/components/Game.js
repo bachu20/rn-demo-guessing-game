@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { Text, Button } from "@rneui/themed";
-import { useTheme } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const reducer = (state, action) => {
   const { curr, guesses, bounds } = state;
@@ -24,10 +24,9 @@ const INITIAL_STATE = {
   bounds: { upper: 99, lower: 0 },
 };
 
-const Game = ({ navigation, route }) => {
+const Game = ({ state: gameState, theme, setGameOver }) => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
 
-  const theme = useTheme();
   const styles = getStyles(theme.colors);
 
   useEffect(() => {
@@ -35,11 +34,8 @@ const Game = ({ navigation, route }) => {
   }, [state.bounds]);
 
   useEffect(() => {
-    if (state.curr === +route.params.target) {
-      return navigation.navigate("GameOver", {
-        target: route.params.target,
-        rounds: state.guesses.length + 1, // plus 1 since we're short-circuiting final guess
-      });
+    if (state.curr === gameState.target) {
+      return setGameOver(state.guesses.length + 1); // plus 1 since we're short-circuiting final guess
     }
   }, [state.curr]);
 
@@ -65,16 +61,19 @@ const Game = ({ navigation, route }) => {
         <View style={styles.boundsBtns}>
           <Button
             buttonStyle={styles.boundsBtn}
-            title="-"
             size="md"
             onPress={() => dispatch({ type: "LOWER" })}
-          />
+          >
+            <Ionicons name="remove-outline" size={24} color="#fff" />
+          </Button>
+
           <Button
             buttonStyle={styles.boundsBtn}
-            title="+"
             size="md"
             onPress={() => dispatch({ type: "HIGHER" })}
-          />
+          >
+            <Ionicons name="add-outline" size={24} color="#fff" />
+          </Button>
         </View>
       </View>
 
@@ -112,7 +111,6 @@ const getStyles = (theme) => {
       justifyContent: "flex-start",
       paddingTop: 50,
       paddingHorizontal: 25,
-      backgroundColor: theme.primary,
     },
 
     header: {
